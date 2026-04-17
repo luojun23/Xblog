@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.njtech.blog.mappers.SortMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.njtech.blog.entity.po.Sort">
+		<!--id-->
+		<id column="id" property="id"  />
+		<!--分类名称-->
+		<result column="sort_name" property="sortName"  />
+		<!--分类描述-->
+		<result column="sort_description" property="sortDescription"  />
+		<!--分类类型[0:导航栏分类，1:普通分类]-->
+		<result column="sort_type" property="sortType"  />
+		<!--分类优先级：数字小的在前面-->
+		<result column="priority" property="priority"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 id,sort_name,sort_description,sort_type,priority
+		 
+	</sql>
+
+	<sql id="base_condition_filed">
+			<if test="query.id != null">
+				 and  id = #{query.id}
+			</if>
+			<if test="query.sortName != null and query.sortName!=''">
+				 and  sort_name = #{query.sortName}
+			</if>
+			<if test="query.sortDescription != null and query.sortDescription!=''">
+				 and  sort_description = #{query.sortDescription}
+			</if>
+			<if test="query.sortType != null">
+				 and  sort_type = #{query.sortType}
+			</if>
+			<if test="query.priority != null">
+				 and  priority = #{query.priority}
+			</if>
+	</sql>
+	<!-- 通用条件列-->
+	<sql id="base_condition">
+	 <where>
+		 <include refid="base_condition_filed" />
+	 </where>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+	 <where>
+			<include refid="base_condition_filed" />
+			<if test="query.sortNameFuzzy!= null  and query.sortNameFuzzy!=''">
+				 and  sort_name like concat('%', #{query.sortNameFuzzy}, '%')
+			</if>
+			<if test="query.sortDescriptionFuzzy!= null  and query.sortDescriptionFuzzy!=''">
+				 and  sort_description like concat('%', #{query.sortDescriptionFuzzy}, '%')
+			</if>
+	 </where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM sort <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM sort <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.njtech.blog.entity.po.Sort">
+		<selectKey keyProperty="bean.id" resultType="Integer" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		 INSERT INTO sort
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.sortName != null">
+				 sort_name,
+			</if>
+			<if test="bean.sortDescription != null">
+				 sort_description,
+			</if>
+			<if test="bean.sortType != null">
+				 sort_type,
+			</if>
+			<if test="bean.priority != null">
+				 priority,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.sortName!=null">
+				 #{bean.sortName},
+			</if>
+			<if test="bean.sortDescription!=null">
+				 #{bean.sortDescription},
+			</if>
+			<if test="bean.sortType!=null">
+				 #{bean.sortType},
+			</if>
+			<if test="bean.priority!=null">
+				 #{bean.priority},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.njtech.blog.entity.po.Sort">
+		 INSERT INTO sort
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.id != null">
+				 id,
+			</if>
+			<if test="bean.sortName != null">
+				 sort_name,
+			</if>
+			<if test="bean.sortDescription != null">
+				 sort_description,
+			</if>
+			<if test="bean.sortType != null">
+				 sort_type,
+			</if>
+			<if test="bean.priority != null">
+				 priority,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.id!=null">
+				 #{bean.id},
+			</if>
+			<if test="bean.sortName!=null">
+				 #{bean.sortName},
+			</if>
+			<if test="bean.sortDescription!=null">
+				 #{bean.sortDescription},
+			</if>
+			<if test="bean.sortType!=null">
+				 #{bean.sortType},
+			</if>
+			<if test="bean.priority!=null">
+				 #{bean.priority},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.sortName!=null">
+				 sort_name = VALUES(sort_name),
+			</if>
+			<if test="bean.sortDescription!=null">
+				 sort_description = VALUES(sort_description),
+			</if>
+			<if test="bean.sortType!=null">
+				 sort_type = VALUES(sort_type),
+			</if>
+			<if test="bean.priority!=null">
+				 priority = VALUES(priority),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.njtech.blog.entity.po.Sort" useGeneratedKeys="true" keyProperty="id">
+		 INSERT INTO sort(
+			 sort_name,
+			 sort_description,
+			 sort_type,
+			 priority
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.sortName},
+				 #{item.sortDescription},
+				 #{item.sortType},
+				 #{item.priority}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.njtech.blog.entity.po.Sort">
+		 INSERT INTO sort(
+			 sort_name,
+			 sort_description,
+			 sort_type,
+			 priority
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.sortName},
+				 #{item.sortDescription},
+				 #{item.sortType},
+				 #{item.priority}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			sort_name = VALUES(sort_name),
+			sort_description = VALUES(sort_description),
+			sort_type = VALUES(sort_type),
+			priority = VALUES(priority)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.njtech.blog.entity.query.SortQuery">
+		 UPDATE sort
+ 		 <set> 
+			<if test="bean.sortName != null">
+				 sort_name = #{bean.sortName},
+			</if>
+			<if test="bean.sortDescription != null">
+				 sort_description = #{bean.sortDescription},
+			</if>
+			<if test="bean.sortType != null">
+				 sort_type = #{bean.sortType},
+			</if>
+			<if test="bean.priority != null">
+				 priority = #{bean.priority},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from sort
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据Id修改-->
+	<update id="updateById" parameterType="com.njtech.blog.entity.po.Sort">
+		 UPDATE sort
+ 		 <set> 
+			<if test="bean.sortName != null">
+				 sort_name = #{bean.sortName},
+			</if>
+			<if test="bean.sortDescription != null">
+				 sort_description = #{bean.sortDescription},
+			</if>
+			<if test="bean.sortType != null">
+				 sort_type = #{bean.sortType},
+			</if>
+			<if test="bean.priority != null">
+				 priority = #{bean.priority},
+			</if>
+ 		 </set>
+ 		 where id=#{id}
+	</update>
+
+	<!-- 根据Id删除-->
+	<delete id="deleteById">
+		delete from sort where id=#{id}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectById" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from sort where id=#{id}
+	</select>
+
+</mapper>

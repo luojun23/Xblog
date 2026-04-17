@@ -96,4 +96,64 @@ const records = ref([
   border-radius: 20px;
   font-size: 12px;
 }
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .records-page {
+    padding: 80px 15px 100px;
+  }
+  
+  .page-title h1 {
+    font-size: 28px;
+  }
+  
+  .records-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 15px;
+  }
+  
+  .record-card {
+    padding: 20px;
+  }
+  
+  .record-icon {
+    font-size: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .records-page {
+    padding: 70px 10px 100px;
+  }
+  
+  .page-title h1 {
+    font-size: 24px;
+  }
+  
+  .page-title p {
+    font-size: 14px;
+  }
+  
+  .records-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  
+  .record-card {
+    padding: 15px;
+  }
+  
+  .record-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+  }
+  
+  .record-card h3 {
+    font-size: 15px;
+  }
+  
+  .record-card p {
+    font-size: 12px;
+  }
+}
 </style>

@@ -98,4 +98,53 @@ const tools = ref([
   font-size: 14px;
   color: #666;
 }
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .toolbox-page {
+    padding: 70px 15px 100px;
+  }
+  
+  .page-title {
+    font-size: 28px;
+  }
+  
+  .tools-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .toolbox-page {
+    padding: 60px 10px 100px;
+  }
+  
+  .page-title {
+    font-size: 24px;
+  }
+  
+  .tools-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  
+  .tool-card {
+    padding: 20px 15px;
+  }
+  
+  .tool-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+  
+  .tool-card h3 {
+    font-size: 15px;
+  }
+  
+  .tool-card p {
+    font-size: 12px;
+  }
+}
 </style>

@@ -1,14 +1,12 @@
 <template>
-  <div class="home-page" :class="{ 'search-active': showSearchPanel }">
+  <div class="home-page" :class="{ 'search-active': showSearchPanel || isSearchFocused }">
     <div class="hero-section">
       <div class="time-display">
         <div class="time">
-          <div class="time-main">
             <span class="time-num">{{ hours }}</span>
             <span class="separator">:</span>
             <span class="time-num">{{ minutes }}</span>
-          </div>
-          <span class="am-pm">{{ amPm }}</span>
+            <span class="am-pm">{{ amPm }}</span>
         </div>
         <div class="date-info">
           <span class="lunar">{{ lunarDate }}</span>
@@ -22,11 +20,12 @@
         </div>
       </div>
       
-      <div class="search-container" ref="searchContainer">
+      <div class="search-container" ref="searchContainer" :class="{ 'focused': isSearchFocused }">
         <div class="search-box">
           <span class="search-icon" @click="toggleSearchPanel" v-html="currentEngineIcon"></span>
-          <input type="text" placeholder="搜点什么吧" autocomplete="false" id="main-input"
-           v-model="searchQuery" @keyup.enter="doSearch"/>
+          <input type="text" placeholder="搜点什么吧" autocomplete="false"
+           v-model="searchQuery" @keyup.enter="doSearch" @click.stop
+           @focus="isSearchFocused = true" @blur="isSearchFocused = false"/>
           <div class="go" @click="doSearch"> 
             <span class="search-btn" v-html="currentButtonIcon"></span>
         </div>
@@ -46,6 +45,18 @@
                 <span class="engine-name">{{ engine.name }}</span>
               </div>
             </div>
+          </div>
+        </Transition>
+        
+        <!-- 快捷翻译 -->
+        <Transition name="slide-fade">
+          <div v-if="searchQuery.trim() && isSearchFocused" class="quick-translate" @click="doTranslate">
+            <span class="translate-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                <path d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/>
+              </svg>
+            </span>
+            <span class="translate-text">快捷翻译：{{ searchQuery }}</span>
           </div>
         </Transition>
       </div>
@@ -89,6 +100,7 @@ const currentMonth = ref('1')
 const currentDay = ref('1')
 const searchQuery = ref('')
 const showSearchPanel = ref(false)
+const isSearchFocused = ref(false)
 const currentEngine = ref('百度')
 const searchContainer = ref(null)
 
@@ -98,7 +110,7 @@ const currentEngineIcon = computed(() => {
 })
 
 const currentButtonIcon = computed(() => {
-  const engine = searchEngines.find(e => e.name === 'button')
+  const engine = buttonSearch[0]
   return engine.icon
 })
 
@@ -152,7 +164,10 @@ const searchEngines = [
         <path d="M615.40124445 716.43591111l62.44124444-47.14951111h48.96995556V344.33706667h-137.80764445v324.94933333h12.74311111l13.65333334 47.14951111z" fill="#ffffff"/>
         </svg>`, 
     url: 'https://www.zhihu.com/search?type=content&q=' 
-  },
+  }
+]
+
+const buttonSearch = [
    { 
     name: 'button', 
     icon: `<svg viewBox="0 0 1024 1024" fill="currentColor" width="16" height="16">
@@ -233,6 +248,12 @@ const doSearch = () => {
     window.open(engine.url + encodeURIComponent(searchQuery.value), '_blank')
   }
 }
+
+const doTranslate = () => {
+  if (!searchQuery.value.trim()) return
+  // 使用百度翻译
+  window.open('https://fanyi.baidu.com/#zh/en/' + encodeURIComponent(searchQuery.value), '_blank')
+}
 </script>
 
 <style scoped>
@@ -291,9 +312,11 @@ const doSearch = () => {
 }
 
 .time {
-    display: flex;
-    align-items: flex-end;
-    gap: 12px;
+    font-family: var(--globalFont);
+    display: inline-flex;
+    align-items: baseline; /* 强制所有子元素以文字基线对齐！ */
+    font-size: 3.5rem;
+    font-weight: 700;
     margin: 6px 0;
     text-shadow: 0 0 8px #00000066;
     transition: transform .3s;
@@ -303,34 +326,19 @@ const doSearch = () => {
   transform: scale(1.05);
 }
 
-.time-main {
-  display: flex;
-  align-items: baseline;
-}
-
-.time-num {
-  font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  font-weight: 700;
-  font-size: 6rem;
-  letter-spacing: 2px;
-  line-height: 1;
-}
-
 .separator {
-  opacity: 0.9;
-  font-size: 5rem;
-  display: inline-block;
-  margin: 0 4px;
-  animation: separator-breathe 0.7s ease infinite alternate;
-  line-height: 1;
+    opacity: .8;
+    font-size: 2.8rem;
+    display: inline-block;
+    margin: 0 5px;
+    transform: translateY(-4px);
+    animation: separator-breathe .7s infinite alternate;
 }
     
 .am-pm {
-  font-size: 1.4rem;
-  opacity: 0.7;
-  font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  font-weight: 500;
-  margin-bottom: 12px;
+    font-size: 1rem;
+    opacity: .6;
+    margin-left: 6px;
 }
 
 @keyframes separator-breathe {
@@ -375,7 +383,7 @@ const doSearch = () => {
 }
 
 .date-num {
-  font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-family: var(--globalFont);
   font-weight: 700;
   font-size: 1.5rem;
   letter-spacing: 1px;
@@ -388,7 +396,7 @@ const doSearch = () => {
 }
 
 .date-week {
-  font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-family: var(--globalFont);
   font-weight: 700;
   font-size: 1.3rem;
   margin-left: 6px;
@@ -402,7 +410,11 @@ const doSearch = () => {
     align-items: center;
     max-width: 680px;
     width: calc(100% - 60px);
-    transition: width .35s linear;
+    transition: width .35s linear, transform .35s ease;
+}
+
+.search-container.focused {
+    transform: translateY(-40px);
 }
 
 .search-box {
@@ -433,18 +445,6 @@ const doSearch = () => {
   align-items: center;
   justify-content: center;
 }
-#main-input{
-    height: 100%;
-    width: 100%;
-    padding: 0;
-    margin: 0;
-    border: none;
-    outline: none;
-    background: none;
-    font-size: 16px;
-    color: #fff;
-}
-
 .search-icon svg {
   width: 100%;
   height: 100%;
@@ -464,10 +464,14 @@ const doSearch = () => {
     background: none;
     font-size: 16px;
     color: #fff;
+    text-align: left;
+    line-height: 42px;
+    font-family: var(--globalFont);
 }
 
 .search-box input::placeholder {
-  color: rgba(255,255,255,0.6);
+  color: rgba(255,255,255,0.8);
+  text-align: center;
 }
 
 .go {
@@ -548,6 +552,50 @@ const doSearch = () => {
   font-weight: 500;
 }
 
+/* 快捷翻译样式 */
+.quick-translate {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.2);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.quick-translate:hover {
+  background: rgba(255,255,255,0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.translate-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.translate-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.translate-text {
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+}
+
 /* Transition animations */
 .slide-fade-enter-active,
 .slide-fade-leave-active {
@@ -614,5 +662,84 @@ const doSearch = () => {
   bottom: 20px;
   color: rgba(255,255,255,0.6);
   font-size: 12px;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .time {
+    font-size: 2.5rem;
+  }
+  
+  .separator {
+    font-size: 2rem;
+  }
+  
+  .am-pm {
+    font-size: 0.8rem;
+  }
+  
+  .date-info {
+    font-size: 14px;
+  }
+  
+  .search-container {
+    width: calc(100% - 40px);
+  }
+  
+  .search-box {
+    height: 38px;
+  }
+  
+  .search-engines {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .quick-links {
+    gap: 20px;
+  }
+  
+  .link-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+  
+  .footer {
+    font-size: 10px;
+    text-align: center;
+    padding: 0 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .time-display {
+    margin-top: 60px;
+    transform: translateY(-100px);
+  }
+  
+  .time {
+    font-size: 2rem;
+  }
+  
+  .separator {
+    font-size: 1.5rem;
+  }
+  
+  .search-container.focused {
+    transform: translateY(-30px);
+  }
+  
+  .search-engines {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  
+  .engine-item {
+    padding: 10px 12px;
+  }
+  
+  .quick-translate {
+    padding: 10px 12px;
+  }
 }
 </style>

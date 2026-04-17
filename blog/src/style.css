@@ -1,4 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
+/* 引入站酷快乐体 */
+@import url('https://cdn.jsdelivr.net/npm/zcool-wenyiti@1.0.0/ZCOOLWenYiTi.css');
+/* 引入 志魔行 字体（Zhi Mang Xing）*/
+@import url('https://fonts.googleapis.com/css2?family=Zhi+Mang+Xing&display=swap');
+/* 2. 全局样式 */
+
+
+@font-face {
+  font-family: "Luojun";
+  src: url('./assets/fonts/fontStyle.ttf');
+}
+
 
 * {
   margin: 0;
@@ -7,19 +18,21 @@
 }
 
 :root {
-  font-family: 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Luojun','ZCOOL WenYiTi', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   line-height: 1.5;
   font-weight: 500;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --globalFont: 'Luojun';
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  font-family: var(--globalFont);
 }
 
 #app {
@@ -54,4 +67,17 @@ body {
 /* Smooth scroll */
 html {
   scroll-behavior: smooth;
+}
+
+/* 移动端适配基础样式 */
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 12px;
+  }
 }

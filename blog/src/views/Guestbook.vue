@@ -198,4 +198,67 @@ const submitMessage = () => {
   color: #666;
   line-height: 1.6;
 }
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .guestbook-page {
+    padding: 70px 15px 100px;
+  }
+  
+  .page-title {
+    font-size: 28px;
+  }
+  
+  .message-form {
+    padding: 20px;
+  }
+  
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+  
+  .message-item {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .guestbook-page {
+    padding: 60px 10px 100px;
+  }
+  
+  .page-title {
+    font-size: 24px;
+  }
+  
+  .page-subtitle {
+    font-size: 14px;
+  }
+  
+  .message-form {
+    padding: 15px;
+  }
+  
+  .form-input,
+  .form-textarea {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+  
+  .submit-btn {
+    width: 100%;
+    padding: 12px;
+  }
+  
+  .message-item {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .message-avatar {
+    width: 40px;
+    height: 40px;
+  }
+}
 </style>

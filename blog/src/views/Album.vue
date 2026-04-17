@@ -123,4 +123,51 @@ const albums = ref([
   margin-top: 12px;
   font-size: 16px;
 }
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .album-page {
+    padding: 80px 15px 100px;
+  }
+  
+  .page-title h1 {
+    font-size: 28px;
+  }
+  
+  .page-title p {
+    font-size: 14px;
+  }
+  
+  .album-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 15px;
+  }
+  
+  .album-cover {
+    height: 140px;
+  }
+}
+
+@media (max-width: 480px) {
+  .album-page {
+    padding: 70px 10px 100px;
+  }
+  
+  .page-title h1 {
+    font-size: 24px;
+  }
+  
+  .album-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  
+  .album-cover {
+    height: 120px;
+  }
+  
+  .album-card h3 {
+    font-size: 14px;
+  }
+}
 </style>

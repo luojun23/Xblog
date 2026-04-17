@@ -1,9 +1,16 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import Navbar from './components/Navbar.vue'
 import LoginModal from './components/LoginModal.vue'
 
+const route = useRoute()
 const showLogin = ref(false)
+
+// 后台路由下隐藏 Navbar
+const isAdminRoute = computed(() => {
+  return route.path.startsWith('/admin')
+})
 
 const openLogin = () => {
   showLogin.value = true
@@ -16,9 +23,9 @@ const closeLogin = () => {
 
 <template>
   <div class="app">
-    <Navbar @open-login="openLogin" />
+    <Navbar v-if="!isAdminRoute" @open-login="openLogin" />
     <router-view />
-    <LoginModal :show="showLogin" @close="closeLogin" />
+    <LoginModal v-if="!isAdminRoute" :show="showLogin" @close="closeLogin" />
   </div>
 </template>
 

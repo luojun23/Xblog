@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.njtech.blog.mappers.CommentMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.njtech.blog.entity.po.Comment">
+		<!--id-->
+		<id column="id" property="id"  />
+		<!--评论来源标识-->
+		<result column="source" property="source"  />
+		<!--评论来源类型-->
+		<result column="type" property="type"  />
+		<!--父评论ID-->
+		<result column="parent_comment_id" property="parentCommentId"  />
+		<!--发表用户ID-->
+		<result column="user_id" property="userId"  />
+		<!--楼层评论ID-->
+		<result column="floor_comment_id" property="floorCommentId"  />
+		<!--父发表用户名ID-->
+		<result column="parent_user_id" property="parentUserId"  />
+		<!--点赞数-->
+		<result column="like_count" property="likeCount"  />
+		<!--评论内容-->
+		<result column="comment_content" property="commentContent"  />
+		<!--评论额外信息-->
+		<result column="comment_info" property="commentInfo"  />
+		<!--创建时间-->
+		<result column="create_time" property="createTime"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 id,source,type,parent_comment_id,user_id,
+		 floor_comment_id,parent_user_id,like_count,comment_content,comment_info,
+		 create_time
+	</sql>
+
+	<sql id="base_condition_filed">
+			<if test="query.id != null">
+				 and  id = #{query.id}
+			</if>
+			<if test="query.source != null">
+				 and  source = #{query.source}
+			</if>
+			<if test="query.type != null and query.type!=''">
+				 and  type = #{query.type}
+			</if>
+			<if test="query.parentCommentId != null">
+				 and  parent_comment_id = #{query.parentCommentId}
+			</if>
+			<if test="query.userId != null">
+				 and  user_id = #{query.userId}
+			</if>
+			<if test="query.floorCommentId != null">
+				 and  floor_comment_id = #{query.floorCommentId}
+			</if>
+			<if test="query.parentUserId != null">
+				 and  parent_user_id = #{query.parentUserId}
+			</if>
+			<if test="query.likeCount != null">
+				 and  like_count = #{query.likeCount}
+			</if>
+			<if test="query.commentContent != null and query.commentContent!=''">
+				 and  comment_content = #{query.commentContent}
+			</if>
+			<if test="query.commentInfo != null and query.commentInfo!=''">
+				 and  comment_info = #{query.commentInfo}
+			</if>
+			<if test="query.createTime != null and query.createTime!=''">
+				 <![CDATA[ and  create_time=str_to_date(#{query.createTime}, '%Y-%m-%d') ]]>
+			</if>
+	</sql>
+	<!-- 通用条件列-->
+	<sql id="base_condition">
+	 <where>
+		 <include refid="base_condition_filed" />
+	 </where>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+	 <where>
+			<include refid="base_condition_filed" />
+			<if test="query.typeFuzzy!= null  and query.typeFuzzy!=''">
+				 and  type like concat('%', #{query.typeFuzzy}, '%')
+			</if>
+			<if test="query.commentContentFuzzy!= null  and query.commentContentFuzzy!=''">
+				 and  comment_content like concat('%', #{query.commentContentFuzzy}, '%')
+			</if>
+			<if test="query.commentInfoFuzzy!= null  and query.commentInfoFuzzy!=''">
+				 and  comment_info like concat('%', #{query.commentInfoFuzzy}, '%')
+			</if>
+			<if test="query.createTimeStart!= null and query.createTimeStart!=''">
+				 <![CDATA[ and  create_time>=str_to_date(#{query.createTimeStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.createTimeEnd!= null and query.createTimeEnd!=''">
+				 <![CDATA[ and  create_time< date_sub(str_to_date(#{query.createTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+	 </where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM comment <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM comment <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.njtech.blog.entity.po.Comment">
+		<selectKey keyProperty="bean.id" resultType="Integer" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		 INSERT INTO comment
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.source != null">
+				 source,
+			</if>
+			<if test="bean.type != null">
+				 type,
+			</if>
+			<if test="bean.parentCommentId != null">
+				 parent_comment_id,
+			</if>
+			<if test="bean.userId != null">
+				 user_id,
+			</if>
+			<if test="bean.floorCommentId != null">
+				 floor_comment_id,
+			</if>
+			<if test="bean.parentUserId != null">
+				 parent_user_id,
+			</if>
+			<if test="bean.likeCount != null">
+				 like_count,
+			</if>
+			<if test="bean.commentContent != null">
+				 comment_content,
+			</if>
+			<if test="bean.commentInfo != null">
+				 comment_info,
+			</if>
+			<if test="bean.createTime != null">
+				 create_time,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.source!=null">
+				 #{bean.source},
+			</if>
+			<if test="bean.type!=null">
+				 #{bean.type},
+			</if>
+			<if test="bean.parentCommentId!=null">
+				 #{bean.parentCommentId},
+			</if>
+			<if test="bean.userId!=null">
+				 #{bean.userId},
+			</if>
+			<if test="bean.floorCommentId!=null">
+				 #{bean.floorCommentId},
+			</if>
+			<if test="bean.parentUserId!=null">
+				 #{bean.parentUserId},
+			</if>
+			<if test="bean.likeCount!=null">
+				 #{bean.likeCount},
+			</if>
+			<if test="bean.commentContent!=null">
+				 #{bean.commentContent},
+			</if>
+			<if test="bean.commentInfo!=null">
+				 #{bean.commentInfo},
+			</if>
+			<if test="bean.createTime!=null">
+				 #{bean.createTime},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.njtech.blog.entity.po.Comment">
+		 INSERT INTO comment
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.id != null">
+				 id,
+			</if>
+			<if test="bean.source != null">
+				 source,
+			</if>
+			<if test="bean.type != null">
+				 type,
+			</if>
+			<if test="bean.parentCommentId != null">
+				 parent_comment_id,
+			</if>
+			<if test="bean.userId != null">
+				 user_id,
+			</if>
+			<if test="bean.floorCommentId != null">
+				 floor_comment_id,
+			</if>
+			<if test="bean.parentUserId != null">
+				 parent_user_id,
+			</if>
+			<if test="bean.likeCount != null">
+				 like_count,
+			</if>
+			<if test="bean.commentContent != null">
+				 comment_content,
+			</if>
+			<if test="bean.commentInfo != null">
+				 comment_info,
+			</if>
+			<if test="bean.createTime != null">
+				 create_time,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.id!=null">
+				 #{bean.id},
+			</if>
+			<if test="bean.source!=null">
+				 #{bean.source},
+			</if>
+			<if test="bean.type!=null">
+				 #{bean.type},
+			</if>
+			<if test="bean.parentCommentId!=null">
+				 #{bean.parentCommentId},
+			</if>
+			<if test="bean.userId!=null">
+				 #{bean.userId},
+			</if>
+			<if test="bean.floorCommentId!=null">
+				 #{bean.floorCommentId},
+			</if>
+			<if test="bean.parentUserId!=null">
+				 #{bean.parentUserId},
+			</if>
+			<if test="bean.likeCount!=null">
+				 #{bean.likeCount},
+			</if>
+			<if test="bean.commentContent!=null">
+				 #{bean.commentContent},
+			</if>
+			<if test="bean.commentInfo!=null">
+				 #{bean.commentInfo},
+			</if>
+			<if test="bean.createTime!=null">
+				 #{bean.createTime},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.source!=null">
+				 source = VALUES(source),
+			</if>
+			<if test="bean.type!=null">
+				 type = VALUES(type),
+			</if>
+			<if test="bean.parentCommentId!=null">
+				 parent_comment_id = VALUES(parent_comment_id),
+			</if>
+			<if test="bean.userId!=null">
+				 user_id = VALUES(user_id),
+			</if>
+			<if test="bean.floorCommentId!=null">
+				 floor_comment_id = VALUES(floor_comment_id),
+			</if>
+			<if test="bean.parentUserId!=null">
+				 parent_user_id = VALUES(parent_user_id),
+			</if>
+			<if test="bean.likeCount!=null">
+				 like_count = VALUES(like_count),
+			</if>
+			<if test="bean.commentContent!=null">
+				 comment_content = VALUES(comment_content),
+			</if>
+			<if test="bean.commentInfo!=null">
+				 comment_info = VALUES(comment_info),
+			</if>
+			<if test="bean.createTime!=null">
+				 create_time = VALUES(create_time),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.njtech.blog.entity.po.Comment" useGeneratedKeys="true" keyProperty="id">
+		 INSERT INTO comment(
+			 source,
+			 type,
+			 parent_comment_id,
+			 user_id,
+			 floor_comment_id,
+			 parent_user_id,
+			 like_count,
+			 comment_content,
+			 comment_info,
+			 create_time
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.source},
+				 #{item.type},
+				 #{item.parentCommentId},
+				 #{item.userId},
+				 #{item.floorCommentId},
+				 #{item.parentUserId},
+				 #{item.likeCount},
+				 #{item.commentContent},
+				 #{item.commentInfo},
+				 #{item.createTime}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.njtech.blog.entity.po.Comment">
+		 INSERT INTO comment(
+			 source,
+			 type,
+			 parent_comment_id,
+			 user_id,
+			 floor_comment_id,
+			 parent_user_id,
+			 like_count,
+			 comment_content,
+			 comment_info,
+			 create_time
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.source},
+				 #{item.type},
+				 #{item.parentCommentId},
+				 #{item.userId},
+				 #{item.floorCommentId},
+				 #{item.parentUserId},
+				 #{item.likeCount},
+				 #{item.commentContent},
+				 #{item.commentInfo},
+				 #{item.createTime}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			source = VALUES(source),
+			type = VALUES(type),
+			parent_comment_id = VALUES(parent_comment_id),
+			user_id = VALUES(user_id),
+			floor_comment_id = VALUES(floor_comment_id),
+			parent_user_id = VALUES(parent_user_id),
+			like_count = VALUES(like_count),
+			comment_content = VALUES(comment_content),
+			comment_info = VALUES(comment_info),
+			create_time = VALUES(create_time)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.njtech.blog.entity.query.CommentQuery">
+		 UPDATE comment
+ 		 <set> 
+			<if test="bean.source != null">
+				 source = #{bean.source},
+			</if>
+			<if test="bean.type != null">
+				 type = #{bean.type},
+			</if>
+			<if test="bean.parentCommentId != null">
+				 parent_comment_id = #{bean.parentCommentId},
+			</if>
+			<if test="bean.userId != null">
+				 user_id = #{bean.userId},
+			</if>
+			<if test="bean.floorCommentId != null">
+				 floor_comment_id = #{bean.floorCommentId},
+			</if>
+			<if test="bean.parentUserId != null">
+				 parent_user_id = #{bean.parentUserId},
+			</if>
+			<if test="bean.likeCount != null">
+				 like_count = #{bean.likeCount},
+			</if>
+			<if test="bean.commentContent != null">
+				 comment_content = #{bean.commentContent},
+			</if>
+			<if test="bean.commentInfo != null">
+				 comment_info = #{bean.commentInfo},
+			</if>
+			<if test="bean.createTime != null">
+				 create_time = #{bean.createTime},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from comment
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据Id修改-->
+	<update id="updateById" parameterType="com.njtech.blog.entity.po.Comment">
+		 UPDATE comment
+ 		 <set> 
+			<if test="bean.source != null">
+				 source = #{bean.source},
+			</if>
+			<if test="bean.type != null">
+				 type = #{bean.type},
+			</if>
+			<if test="bean.parentCommentId != null">
+				 parent_comment_id = #{bean.parentCommentId},
+			</if>
+			<if test="bean.userId != null">
+				 user_id = #{bean.userId},
+			</if>
+			<if test="bean.floorCommentId != null">
+				 floor_comment_id = #{bean.floorCommentId},
+			</if>
+			<if test="bean.parentUserId != null">
+				 parent_user_id = #{bean.parentUserId},
+			</if>
+			<if test="bean.likeCount != null">
+				 like_count = #{bean.likeCount},
+			</if>
+			<if test="bean.commentContent != null">
+				 comment_content = #{bean.commentContent},
+			</if>
+			<if test="bean.commentInfo != null">
+				 comment_info = #{bean.commentInfo},
+			</if>
+			<if test="bean.createTime != null">
+				 create_time = #{bean.createTime},
+			</if>
+ 		 </set>
+ 		 where id=#{id}
+	</update>
+
+	<!-- 根据Id删除-->
+	<delete id="deleteById">
+		delete from comment where id=#{id}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectById" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from comment where id=#{id}
+	</select>
+
+</mapper>

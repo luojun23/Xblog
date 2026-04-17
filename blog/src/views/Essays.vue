@@ -191,4 +191,51 @@ const essays = ref([
 .action-btn:hover {
   color: #666;
 }
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .essays-page {
+    padding: 70px 15px 100px;
+  }
+  
+  .page-header {
+    padding: 15px;
+  }
+  
+  .essay-list {
+    padding: 0 10px;
+  }
+  
+  .essay-title {
+    font-size: 16px;
+  }
+  
+  .essay-content {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .essays-page {
+    padding: 60px 10px 100px;
+  }
+  
+  .page-header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+  
+  .essay-card {
+    padding: 15px;
+  }
+  
+  .essay-title {
+    font-size: 15px;
+  }
+  
+  .essay-content {
+    font-size: 13px;
+  }
+}
 </style>
