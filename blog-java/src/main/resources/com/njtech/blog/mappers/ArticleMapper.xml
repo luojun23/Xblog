@@ -1,0 +1,730 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.njtech.blog.mappers.ArticleMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.njtech.blog.entity.po.Article">
+		<!--id-->
+		<id column="id" property="id"  />
+		<!--用户ID-->
+		<result column="user_id" property="userId"  />
+		<!--分类ID-->
+		<result column="sort_id" property="sortId"  />
+		<!--标签ID-->
+		<result column="label_id" property="labelId"  />
+		<!--封面-->
+		<result column="article_cover" property="articleCover"  />
+		<!--博文标题-->
+		<result column="article_title" property="articleTitle"  />
+		<!--博文内容-->
+		<result column="article_content" property="articleContent"  />
+		<!--视频链接-->
+		<result column="video_url" property="videoUrl"  />
+		<!--浏览量-->
+		<result column="view_count" property="viewCount"  />
+		<!--点赞数-->
+		<result column="like_count" property="likeCount"  />
+		<!--是否可见[0:否，1:是]-->
+		<result column="view_status" property="viewStatus"  />
+		<!--密码-->
+		<result column="password" property="password"  />
+		<!--提示-->
+		<result column="tips" property="tips"  />
+		<!--是否推荐[0:否，1:是]-->
+		<result column="recommend_status" property="recommendStatus"  />
+		<!--是否启用评论[0:否，1:是]-->
+		<result column="comment_status" property="commentStatus"  />
+		<!--创建时间-->
+		<result column="create_time" property="createTime"  />
+		<!--最终修改时间-->
+		<result column="update_time" property="updateTime"  />
+		<!--最终修改人-->
+		<result column="update_by" property="updateBy"  />
+		<!--是否启用[0:未删除，1:已删除]-->
+		<result column="deleted" property="deleted"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 id,user_id,sort_id,label_id,article_cover,
+		 article_title,article_content,video_url,view_count,like_count,
+		 view_status,password,tips,recommend_status,comment_status,
+		 create_time,update_time,update_by,deleted
+	</sql>
+
+	<sql id="base_condition_filed">
+			<if test="query.id != null">
+				 and  id = #{query.id}
+			</if>
+			<if test="query.userId != null">
+				 and  user_id = #{query.userId}
+			</if>
+			<if test="query.sortId != null">
+				 and  sort_id = #{query.sortId}
+			</if>
+			<if test="query.labelId != null">
+				 and  label_id = #{query.labelId}
+			</if>
+			<if test="query.articleCover != null and query.articleCover!=''">
+				 and  article_cover = #{query.articleCover}
+			</if>
+			<if test="query.articleTitle != null and query.articleTitle!=''">
+				 and  article_title = #{query.articleTitle}
+			</if>
+			<if test="query.articleContent != null and query.articleContent!=''">
+				 and  article_content = #{query.articleContent}
+			</if>
+			<if test="query.videoUrl != null and query.videoUrl!=''">
+				 and  video_url = #{query.videoUrl}
+			</if>
+			<if test="query.viewCount != null">
+				 and  view_count = #{query.viewCount}
+			</if>
+			<if test="query.likeCount != null">
+				 and  like_count = #{query.likeCount}
+			</if>
+			<if test="query.viewStatus != null">
+				 and  view_status = #{query.viewStatus}
+			</if>
+			<if test="query.password != null and query.password!=''">
+				 and  password = #{query.password}
+			</if>
+			<if test="query.tips != null and query.tips!=''">
+				 and  tips = #{query.tips}
+			</if>
+			<if test="query.recommendStatus != null">
+				 and  recommend_status = #{query.recommendStatus}
+			</if>
+			<if test="query.commentStatus != null">
+				 and  comment_status = #{query.commentStatus}
+			</if>
+			<if test="query.createTime != null and query.createTime!=''">
+				 <![CDATA[ and  create_time=str_to_date(#{query.createTime}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.updateTime != null and query.updateTime!=''">
+				 <![CDATA[ and  update_time=str_to_date(#{query.updateTime}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.updateBy != null and query.updateBy!=''">
+				 and  update_by = #{query.updateBy}
+			</if>
+			<if test="query.deleted != null">
+				 and  deleted = #{query.deleted}
+			</if>
+	</sql>
+	<!-- 通用条件列-->
+	<sql id="base_condition">
+	 <where>
+		 <include refid="base_condition_filed" />
+	 </where>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+	 <where>
+			<include refid="base_condition_filed" />
+			<if test="query.articleCoverFuzzy!= null  and query.articleCoverFuzzy!=''">
+				 and  article_cover like concat('%', #{query.articleCoverFuzzy}, '%')
+			</if>
+			<if test="query.articleTitleFuzzy!= null  and query.articleTitleFuzzy!=''">
+				 and  article_title like concat('%', #{query.articleTitleFuzzy}, '%')
+			</if>
+			<if test="query.articleContentFuzzy!= null  and query.articleContentFuzzy!=''">
+				 and  article_content like concat('%', #{query.articleContentFuzzy}, '%')
+			</if>
+			<if test="query.videoUrlFuzzy!= null  and query.videoUrlFuzzy!=''">
+				 and  video_url like concat('%', #{query.videoUrlFuzzy}, '%')
+			</if>
+			<if test="query.passwordFuzzy!= null  and query.passwordFuzzy!=''">
+				 and  password like concat('%', #{query.passwordFuzzy}, '%')
+			</if>
+			<if test="query.tipsFuzzy!= null  and query.tipsFuzzy!=''">
+				 and  tips like concat('%', #{query.tipsFuzzy}, '%')
+			</if>
+			<if test="query.createTimeStart!= null and query.createTimeStart!=''">
+				 <![CDATA[ and  create_time>=str_to_date(#{query.createTimeStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.createTimeEnd!= null and query.createTimeEnd!=''">
+				 <![CDATA[ and  create_time< date_sub(str_to_date(#{query.createTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+			<if test="query.updateTimeStart!= null and query.updateTimeStart!=''">
+				 <![CDATA[ and  update_time>=str_to_date(#{query.updateTimeStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.updateTimeEnd!= null and query.updateTimeEnd!=''">
+				 <![CDATA[ and  update_time< date_sub(str_to_date(#{query.updateTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+			<if test="query.updateByFuzzy!= null  and query.updateByFuzzy!=''">
+				 and  update_by like concat('%', #{query.updateByFuzzy}, '%')
+			</if>
+	 </where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM article <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM article <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.njtech.blog.entity.po.Article">
+		<selectKey keyProperty="bean.id" resultType="Integer" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		 INSERT INTO article
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.userId != null">
+				 user_id,
+			</if>
+			<if test="bean.sortId != null">
+				 sort_id,
+			</if>
+			<if test="bean.labelId != null">
+				 label_id,
+			</if>
+			<if test="bean.articleCover != null">
+				 article_cover,
+			</if>
+			<if test="bean.articleTitle != null">
+				 article_title,
+			</if>
+			<if test="bean.articleContent != null">
+				 article_content,
+			</if>
+			<if test="bean.videoUrl != null">
+				 video_url,
+			</if>
+			<if test="bean.viewCount != null">
+				 view_count,
+			</if>
+			<if test="bean.likeCount != null">
+				 like_count,
+			</if>
+			<if test="bean.viewStatus != null">
+				 view_status,
+			</if>
+			<if test="bean.password != null">
+				 password,
+			</if>
+			<if test="bean.tips != null">
+				 tips,
+			</if>
+			<if test="bean.recommendStatus != null">
+				 recommend_status,
+			</if>
+			<if test="bean.commentStatus != null">
+				 comment_status,
+			</if>
+			<if test="bean.createTime != null">
+				 create_time,
+			</if>
+			<if test="bean.updateTime != null">
+				 update_time,
+			</if>
+			<if test="bean.updateBy != null">
+				 update_by,
+			</if>
+			<if test="bean.deleted != null">
+				 deleted,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.userId!=null">
+				 #{bean.userId},
+			</if>
+			<if test="bean.sortId!=null">
+				 #{bean.sortId},
+			</if>
+			<if test="bean.labelId!=null">
+				 #{bean.labelId},
+			</if>
+			<if test="bean.articleCover!=null">
+				 #{bean.articleCover},
+			</if>
+			<if test="bean.articleTitle!=null">
+				 #{bean.articleTitle},
+			</if>
+			<if test="bean.articleContent!=null">
+				 #{bean.articleContent},
+			</if>
+			<if test="bean.videoUrl!=null">
+				 #{bean.videoUrl},
+			</if>
+			<if test="bean.viewCount!=null">
+				 #{bean.viewCount},
+			</if>
+			<if test="bean.likeCount!=null">
+				 #{bean.likeCount},
+			</if>
+			<if test="bean.viewStatus!=null">
+				 #{bean.viewStatus},
+			</if>
+			<if test="bean.password!=null">
+				 #{bean.password},
+			</if>
+			<if test="bean.tips!=null">
+				 #{bean.tips},
+			</if>
+			<if test="bean.recommendStatus!=null">
+				 #{bean.recommendStatus},
+			</if>
+			<if test="bean.commentStatus!=null">
+				 #{bean.commentStatus},
+			</if>
+			<if test="bean.createTime!=null">
+				 #{bean.createTime},
+			</if>
+			<if test="bean.updateTime!=null">
+				 #{bean.updateTime},
+			</if>
+			<if test="bean.updateBy!=null">
+				 #{bean.updateBy},
+			</if>
+			<if test="bean.deleted!=null">
+				 #{bean.deleted},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.njtech.blog.entity.po.Article">
+		 INSERT INTO article
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.id != null">
+				 id,
+			</if>
+			<if test="bean.userId != null">
+				 user_id,
+			</if>
+			<if test="bean.sortId != null">
+				 sort_id,
+			</if>
+			<if test="bean.labelId != null">
+				 label_id,
+			</if>
+			<if test="bean.articleCover != null">
+				 article_cover,
+			</if>
+			<if test="bean.articleTitle != null">
+				 article_title,
+			</if>
+			<if test="bean.articleContent != null">
+				 article_content,
+			</if>
+			<if test="bean.videoUrl != null">
+				 video_url,
+			</if>
+			<if test="bean.viewCount != null">
+				 view_count,
+			</if>
+			<if test="bean.likeCount != null">
+				 like_count,
+			</if>
+			<if test="bean.viewStatus != null">
+				 view_status,
+			</if>
+			<if test="bean.password != null">
+				 password,
+			</if>
+			<if test="bean.tips != null">
+				 tips,
+			</if>
+			<if test="bean.recommendStatus != null">
+				 recommend_status,
+			</if>
+			<if test="bean.commentStatus != null">
+				 comment_status,
+			</if>
+			<if test="bean.createTime != null">
+				 create_time,
+			</if>
+			<if test="bean.updateTime != null">
+				 update_time,
+			</if>
+			<if test="bean.updateBy != null">
+				 update_by,
+			</if>
+			<if test="bean.deleted != null">
+				 deleted,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.id!=null">
+				 #{bean.id},
+			</if>
+			<if test="bean.userId!=null">
+				 #{bean.userId},
+			</if>
+			<if test="bean.sortId!=null">
+				 #{bean.sortId},
+			</if>
+			<if test="bean.labelId!=null">
+				 #{bean.labelId},
+			</if>
+			<if test="bean.articleCover!=null">
+				 #{bean.articleCover},
+			</if>
+			<if test="bean.articleTitle!=null">
+				 #{bean.articleTitle},
+			</if>
+			<if test="bean.articleContent!=null">
+				 #{bean.articleContent},
+			</if>
+			<if test="bean.videoUrl!=null">
+				 #{bean.videoUrl},
+			</if>
+			<if test="bean.viewCount!=null">
+				 #{bean.viewCount},
+			</if>
+			<if test="bean.likeCount!=null">
+				 #{bean.likeCount},
+			</if>
+			<if test="bean.viewStatus!=null">
+				 #{bean.viewStatus},
+			</if>
+			<if test="bean.password!=null">
+				 #{bean.password},
+			</if>
+			<if test="bean.tips!=null">
+				 #{bean.tips},
+			</if>
+			<if test="bean.recommendStatus!=null">
+				 #{bean.recommendStatus},
+			</if>
+			<if test="bean.commentStatus!=null">
+				 #{bean.commentStatus},
+			</if>
+			<if test="bean.createTime!=null">
+				 #{bean.createTime},
+			</if>
+			<if test="bean.updateTime!=null">
+				 #{bean.updateTime},
+			</if>
+			<if test="bean.updateBy!=null">
+				 #{bean.updateBy},
+			</if>
+			<if test="bean.deleted!=null">
+				 #{bean.deleted},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.userId!=null">
+				 user_id = VALUES(user_id),
+			</if>
+			<if test="bean.sortId!=null">
+				 sort_id = VALUES(sort_id),
+			</if>
+			<if test="bean.labelId!=null">
+				 label_id = VALUES(label_id),
+			</if>
+			<if test="bean.articleCover!=null">
+				 article_cover = VALUES(article_cover),
+			</if>
+			<if test="bean.articleTitle!=null">
+				 article_title = VALUES(article_title),
+			</if>
+			<if test="bean.articleContent!=null">
+				 article_content = VALUES(article_content),
+			</if>
+			<if test="bean.videoUrl!=null">
+				 video_url = VALUES(video_url),
+			</if>
+			<if test="bean.viewCount!=null">
+				 view_count = VALUES(view_count),
+			</if>
+			<if test="bean.likeCount!=null">
+				 like_count = VALUES(like_count),
+			</if>
+			<if test="bean.viewStatus!=null">
+				 view_status = VALUES(view_status),
+			</if>
+			<if test="bean.password!=null">
+				 password = VALUES(password),
+			</if>
+			<if test="bean.tips!=null">
+				 tips = VALUES(tips),
+			</if>
+			<if test="bean.recommendStatus!=null">
+				 recommend_status = VALUES(recommend_status),
+			</if>
+			<if test="bean.commentStatus!=null">
+				 comment_status = VALUES(comment_status),
+			</if>
+			<if test="bean.createTime!=null">
+				 create_time = VALUES(create_time),
+			</if>
+			<if test="bean.updateTime!=null">
+				 update_time = VALUES(update_time),
+			</if>
+			<if test="bean.updateBy!=null">
+				 update_by = VALUES(update_by),
+			</if>
+			<if test="bean.deleted!=null">
+				 deleted = VALUES(deleted),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.njtech.blog.entity.po.Article" useGeneratedKeys="true" keyProperty="id">
+		 INSERT INTO article(
+			 user_id,
+			 sort_id,
+			 label_id,
+			 article_cover,
+			 article_title,
+			 article_content,
+			 video_url,
+			 view_count,
+			 like_count,
+			 view_status,
+			 password,
+			 tips,
+			 recommend_status,
+			 comment_status,
+			 create_time,
+			 update_time,
+			 update_by,
+			 deleted
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.userId},
+				 #{item.sortId},
+				 #{item.labelId},
+				 #{item.articleCover},
+				 #{item.articleTitle},
+				 #{item.articleContent},
+				 #{item.videoUrl},
+				 #{item.viewCount},
+				 #{item.likeCount},
+				 #{item.viewStatus},
+				 #{item.password},
+				 #{item.tips},
+				 #{item.recommendStatus},
+				 #{item.commentStatus},
+				 #{item.createTime},
+				 #{item.updateTime},
+				 #{item.updateBy},
+				 #{item.deleted}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.njtech.blog.entity.po.Article">
+		 INSERT INTO article(
+			 user_id,
+			 sort_id,
+			 label_id,
+			 article_cover,
+			 article_title,
+			 article_content,
+			 video_url,
+			 view_count,
+			 like_count,
+			 view_status,
+			 password,
+			 tips,
+			 recommend_status,
+			 comment_status,
+			 create_time,
+			 update_time,
+			 update_by,
+			 deleted
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.userId},
+				 #{item.sortId},
+				 #{item.labelId},
+				 #{item.articleCover},
+				 #{item.articleTitle},
+				 #{item.articleContent},
+				 #{item.videoUrl},
+				 #{item.viewCount},
+				 #{item.likeCount},
+				 #{item.viewStatus},
+				 #{item.password},
+				 #{item.tips},
+				 #{item.recommendStatus},
+				 #{item.commentStatus},
+				 #{item.createTime},
+				 #{item.updateTime},
+				 #{item.updateBy},
+				 #{item.deleted}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			user_id = VALUES(user_id),
+			sort_id = VALUES(sort_id),
+			label_id = VALUES(label_id),
+			article_cover = VALUES(article_cover),
+			article_title = VALUES(article_title),
+			article_content = VALUES(article_content),
+			video_url = VALUES(video_url),
+			view_count = VALUES(view_count),
+			like_count = VALUES(like_count),
+			view_status = VALUES(view_status),
+			password = VALUES(password),
+			tips = VALUES(tips),
+			recommend_status = VALUES(recommend_status),
+			comment_status = VALUES(comment_status),
+			create_time = VALUES(create_time),
+			update_time = VALUES(update_time),
+			update_by = VALUES(update_by),
+			deleted = VALUES(deleted)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.njtech.blog.entity.query.ArticleQuery">
+		 UPDATE article
+ 		 <set> 
+			<if test="bean.userId != null">
+				 user_id = #{bean.userId},
+			</if>
+			<if test="bean.sortId != null">
+				 sort_id = #{bean.sortId},
+			</if>
+			<if test="bean.labelId != null">
+				 label_id = #{bean.labelId},
+			</if>
+			<if test="bean.articleCover != null">
+				 article_cover = #{bean.articleCover},
+			</if>
+			<if test="bean.articleTitle != null">
+				 article_title = #{bean.articleTitle},
+			</if>
+			<if test="bean.articleContent != null">
+				 article_content = #{bean.articleContent},
+			</if>
+			<if test="bean.videoUrl != null">
+				 video_url = #{bean.videoUrl},
+			</if>
+			<if test="bean.viewCount != null">
+				 view_count = #{bean.viewCount},
+			</if>
+			<if test="bean.likeCount != null">
+				 like_count = #{bean.likeCount},
+			</if>
+			<if test="bean.viewStatus != null">
+				 view_status = #{bean.viewStatus},
+			</if>
+			<if test="bean.password != null">
+				 password = #{bean.password},
+			</if>
+			<if test="bean.tips != null">
+				 tips = #{bean.tips},
+			</if>
+			<if test="bean.recommendStatus != null">
+				 recommend_status = #{bean.recommendStatus},
+			</if>
+			<if test="bean.commentStatus != null">
+				 comment_status = #{bean.commentStatus},
+			</if>
+			<if test="bean.createTime != null">
+				 create_time = #{bean.createTime},
+			</if>
+			<if test="bean.updateTime != null">
+				 update_time = #{bean.updateTime},
+			</if>
+			<if test="bean.updateBy != null">
+				 update_by = #{bean.updateBy},
+			</if>
+			<if test="bean.deleted != null">
+				 deleted = #{bean.deleted},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from article
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据Id修改-->
+	<update id="updateById" parameterType="com.njtech.blog.entity.po.Article">
+		 UPDATE article
+ 		 <set> 
+			<if test="bean.userId != null">
+				 user_id = #{bean.userId},
+			</if>
+			<if test="bean.sortId != null">
+				 sort_id = #{bean.sortId},
+			</if>
+			<if test="bean.labelId != null">
+				 label_id = #{bean.labelId},
+			</if>
+			<if test="bean.articleCover != null">
+				 article_cover = #{bean.articleCover},
+			</if>
+			<if test="bean.articleTitle != null">
+				 article_title = #{bean.articleTitle},
+			</if>
+			<if test="bean.articleContent != null">
+				 article_content = #{bean.articleContent},
+			</if>
+			<if test="bean.videoUrl != null">
+				 video_url = #{bean.videoUrl},
+			</if>
+			<if test="bean.viewCount != null">
+				 view_count = #{bean.viewCount},
+			</if>
+			<if test="bean.likeCount != null">
+				 like_count = #{bean.likeCount},
+			</if>
+			<if test="bean.viewStatus != null">
+				 view_status = #{bean.viewStatus},
+			</if>
+			<if test="bean.password != null">
+				 password = #{bean.password},
+			</if>
+			<if test="bean.tips != null">
+				 tips = #{bean.tips},
+			</if>
+			<if test="bean.recommendStatus != null">
+				 recommend_status = #{bean.recommendStatus},
+			</if>
+			<if test="bean.commentStatus != null">
+				 comment_status = #{bean.commentStatus},
+			</if>
+			<if test="bean.createTime != null">
+				 create_time = #{bean.createTime},
+			</if>
+			<if test="bean.updateTime != null">
+				 update_time = #{bean.updateTime},
+			</if>
+			<if test="bean.updateBy != null">
+				 update_by = #{bean.updateBy},
+			</if>
+			<if test="bean.deleted != null">
+				 deleted = #{bean.deleted},
+			</if>
+ 		 </set>
+ 		 where id=#{id}
+	</update>
+
+	<!-- 根据Id删除-->
+	<delete id="deleteById">
+		delete from article where id=#{id}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectById" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from article where id=#{id}
+	</select>
+
+</mapper>
