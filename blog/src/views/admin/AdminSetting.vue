@@ -93,7 +93,7 @@
         </el-form-item>
 
         <!-- 网站公告 -->
-        <el-form-item label="网站公告" prop="notice">
+        <el-form-item label="网站公告" prop="notices">
           <el-input
             v-model="form.notice"
             type="textarea"

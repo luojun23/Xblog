@@ -5,6 +5,8 @@ import java.util.List;
 import com.njtech.blog.entity.query.UserQuery;
 import com.njtech.blog.entity.po.User;
 import com.njtech.blog.entity.vo.PaginationResultVO;
+import com.njtech.blog.entity.vo.ResponseVO;
+import com.njtech.blog.entity.vo.UserVO;
 
 
 /**
@@ -52,39 +54,15 @@ public interface UserService {
 	 */
 	Integer deleteByParam(UserQuery param);
 
-	/**
-	 * 根据Id查询对象
-	 */
-	User getUserById(Integer id);
 
+
+	ResponseVO<UserVO> regist(UserVO user);
 
 	/**
-	 * 根据Id修改
+	 * 发送邮箱验证码
+	 * @param email 邮箱地址
+	 * @return 发送结果
 	 */
-	Integer updateUserById(User bean,Integer id);
-
-
-	/**
-	 * 根据Id删除
-	 */
-	Integer deleteUserById(Integer id);
-
-
-	/**
-	 * 根据Username查询对象
-	 */
-	User getUserByUsername(String username);
-
-
-	/**
-	 * 根据Username修改
-	 */
-	Integer updateUserByUsername(User bean,String username);
-
-
-	/**
-	 * 根据Username删除
-	 */
-	Integer deleteUserByUsername(String username);
+	ResponseVO<String> sendEmailCode(String email);
 
 }
