@@ -73,15 +73,13 @@
               <span class="forgot-link">忘记密码？</span>
             </div>
 
-            <el-button
+            <ProButton :info="loading" @click="handleLogin" 
+              :before="proxy.Constants.before_color_2"
+              :after="proxy.Constants.after_color_2"
               class="login-btn"
-              type="primary"
-              size="large"
-              :loading="loading"
-              @click="handleLogin"
             >
-              {{ loading ? '登录中...' : '登 录' }}
-            </el-button>
+            </ProButton>
+
           </el-form>
 
           <div class="back-link" @click="goHome">
@@ -97,10 +95,12 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive,getCurrentInstance} from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import ProButton from '@/components/common/proButton.vue'
 
+const proxy = getCurrentInstance().proxy
 const router = useRouter()
 const loginFormRef = ref(null)
 const loading = ref(false)

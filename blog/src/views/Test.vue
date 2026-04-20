@@ -1,59 +1,17 @@
 <template>
-  <div class="form-validation">
-    <h2>表单验证</h2>
-    
-    <form @submit.prevent="handleSubmit">
-      <div class="form-group">
-        <label>用户名:</label>
-        <input 
-          v-model="username" 
-          placeholder="请输入用户名"
-          :class="{ invalid: !usernameValid }"
-        >
-        <span v-if="!usernameValid" class="error-message">{{ usernameError }}</span>
-      </div>
-      
-      <div class="form-group">
-        <label>邮箱:</label>
-        <input 
-          v-model="email" 
-          type="email" 
-          placeholder="请输入邮箱"
-          :class="{ invalid: !emailValid }"
-        >
-        <span v-if="!emailValid" class="error-message">{{ emailError }}</span>
-      </div>
-      
-      <div class="form-group">
-        <label>密码:</label>
-        <input 
-          v-model="password" 
-          type="password" 
-          placeholder="请输入密码"
-          :class="{ invalid: !passwordValid }"
-        >
-        <span v-if="!passwordValid" class="error-message">{{ passwordError }}</span>
-      </div>
-      
-      <div class="form-group">
-        <label>确认密码:</label>
-        <input 
-          v-model="confirmPassword" 
-          type="password" 
-          placeholder="请确认密码"
-          :class="{ invalid: !confirmPasswordValid }"
-        >
-        <span v-if="!confirmPasswordValid" class="error-message">{{ confirmPasswordError }}</span>
-      </div>
-      
-      <button type="submit" :disabled="!formValid">提交</button>
-    </form>
-  </div>
+
+
+    <ProButton     :info="'提交'"
+                   :before="proxy.Constants.before_color_2"
+                   :after="proxy.Constants.after_color_2">
+    </ProButton>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed,getCurrentInstance} from 'vue';
+const { proxy } = getCurrentInstance();
 
+import ProButton from '@/components/common/proButton.vue';
 // 表单数据
 const username = ref('');
 const email = ref('');
